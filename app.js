@@ -21,7 +21,7 @@ let products = JSON.parse(localStorage.getItem("products")) || [
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let orders = JSON.parse(localStorage.getItem("orders")) || [];
 let suppliers = JSON.parse(localStorage.getItem("suppliers")) || [];
-// Categories can now be dynamically pulled from products or manually managed
+
 let categories = JSON.parse(localStorage.getItem("categories")) || []; 
 if (!localStorage.getItem("categories")) {
     categories = ["Dairy", "Baked Goods", "Fruits", "Breakfast", "Main Course", "Soups"];
@@ -58,7 +58,7 @@ function login(e) {
     const passwordInput = document.getElementById("password").value.trim();
     const errorEl = document.getElementById("message");
 
-    errorEl.textContent = ""; // Clear previous error
+    errorEl.textContent = "";
 
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
     const foundUser = storedUsers.find(user => user.username === usernameInput && user.password === passwordInput);
@@ -66,7 +66,7 @@ function login(e) {
     if (foundUser) {
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("currentUsername", foundUser.username);
-        localStorage.setItem("currentUserRole", foundUser.role); // Store the user's role
+        localStorage.setItem("currentUserRole", foundUser.role); 
 
         if (foundUser.role === 'admin') {
             window.location.href = "index.html";
@@ -81,7 +81,7 @@ function login(e) {
     }
 }
 
-// This 'registerUser' function should ideally reside in register.html's script block.
+
 function registerUser(e) {
     e.preventDefault();
 
@@ -110,7 +110,7 @@ function registerUser(e) {
         return;
     }
 
-    // Default new registrations to 'cashier' role unless a specific admin registration path is created
+   
     storedUsers.push({ username: username, password: password, role: 'cashier' }); 
     localStorage.setItem("users", JSON.stringify(storedUsers));
 
@@ -131,20 +131,20 @@ function logout() {
     if (confirmLogout) {
         localStorage.removeItem("loggedIn");
         localStorage.removeItem("currentUsername");
-        localStorage.removeItem("currentUserRole"); // Clear role on logout
+        localStorage.removeItem("currentUserRole");
         window.location.href = "login.html";
     }
 }
-// In your app.js
+
 function showPage(pageId) {
-    console.log(`showPage('${pageId}') called.`); // ADD THIS LOG
-    // Hide all sections in the main content area
+    console.log(`showPage('${pageId}') called.`); 
+    
     const sections = document.querySelectorAll('main section');
     sections.forEach(section => {
         section.style.display = 'none';
     });
 
-    // Show the active section
+   
     const activeSection = document.getElementById(pageId);
     if (activeSection) {
         activeSection.style.display = 'block';
@@ -153,10 +153,10 @@ function showPage(pageId) {
         console.warn(`Section '${pageId}' not found in HTML.`);
     }
 
-    // Set the active class on the sidebar link
+   
     setActiveSidebarLink(pageId);
 
-    // Call render functions specific to the page (already there, good)
+   
     if (pageId === 'sales') {
         loadProductsForSale(true);
         updateCartDisplay(true);
@@ -175,7 +175,7 @@ function showPage(pageId) {
     }
 }
 
-// --- Admin Page Navigation and Page Display ---
+
 function setActiveSidebarLink(pageId) {
     const links = document.querySelectorAll('#sidebar .sidebar-menu a');
     links.forEach(link => {
@@ -196,7 +196,7 @@ function showPage(pageId) {
         section.style.display = 'none';
     });
 
-    // Show the active section
+   
     const activeSection = document.getElementById(pageId);
     if (activeSection) {
         activeSection.style.display = 'block';
@@ -204,26 +204,26 @@ function showPage(pageId) {
 
     setActiveSidebarLink(pageId);
     if (pageId === 'sales') {
-        loadProductsForSale(true); // Renders products for sales (used by both admin and cashier)
-        updateCartDisplay(true); // Updates cart display (used by both)
+        loadProductsForSale(true);
+        updateCartDisplay(true);
     } else if (pageId === 'products') {
-        renderProductList(); // For managing product inventory
+        renderProductList();
     } else if (pageId === 'inventory') {
-        renderInventory(); // For viewing low stock
+        renderInventory();
     } else if (pageId === 'suppliers') {
         renderSupplierList();
-    } else if (pageId === 'category') { // Corrected from 'categories' to 'category' based on HTML
+    } else if (pageId === 'category') { 
         renderCategoryList();
     } else if (pageId === 'orders') {
-        renderOrderHistory(); // Renamed for clarity
+        renderOrderHistory(); 
     } else if (pageId === 'reports') {
         renderReports();
     }
 }
 
-function renderProductList() { // For the 'Products' admin page
+function renderProductList() {
     const list = document.getElementById("product-list-view");
-    if (!list) return; // Ensure element exists on current page
+    if (!list) return; 
 
     list.innerHTML = "";
 
@@ -243,7 +243,7 @@ function renderProductList() { // For the 'Products' admin page
         `;
         list.appendChild(li);
     });
-    // No need to saveProducts here, it's saved after add/edit/delete actions
+    
 }
 
 function addProduct(e) {
@@ -252,14 +252,14 @@ function addProduct(e) {
     const nameInput = document.getElementById("product-name");
     const priceInput = document.getElementById("product-price");
     const stockInput = document.getElementById("product-stock");
-    const categoryInput = document.getElementById("product-category"); // Assuming this input exists in admin panel
-    const imageInput = document.getElementById("product-image"); // Assuming this input exists
+    const categoryInput = document.getElementById("product-category"); 
+    const imageInput = document.getElementById("product-image"); 
 
     const name = nameInput.value.trim();
     const price = parseFloat(priceInput.value);
     const stock = parseInt(stockInput.value);
     const category = categoryInput ? categoryInput.value.trim() : 'Uncategorized';
-    const image = imageInput ? imageInput.value.trim() : 'placeholder.jpg'; // Default or placeholder
+    const image = imageInput ? imageInput.value.trim() : 'placeholder.jpg'; 
 
     if (!name || isNaN(price) || isNaN(stock) || price <= 0 || stock < 0) {
         alert("Please enter valid product name, a positive price, and non-negative stock.");
@@ -277,16 +277,16 @@ function addProduct(e) {
         price: parseFloat(price.toFixed(2)),
         stock,
         category,
-        image // Add image to product data
+        image
     };
 
     products.push(newProduct);
     saveProducts();
-    renderProductList(); // Refresh admin product list
-    loadProductsForSale(false); // Refresh product buttons in admin sales (pass false to avoid cashier rendering)
-    renderInventory(); // Refresh inventory
-    // Refresh categories if this product's category is new
-    loadCategoriesForCashier(); // This will refresh the cashier categories list
+    renderProductList();
+    loadProductsForSale(false);
+    renderInventory(); 
+   
+    loadCategoriesForCashier();
     alert('Product added successfully!');
 
     nameInput.value = "";
@@ -303,7 +303,7 @@ function editProduct(productId) {
     const newName = prompt("Enter new name for " + product.name + ":", product.name);
     if (newName === null || newName.trim() === "") return;
 
-    // Check for duplicate name if changed, excluding the current product
+   
     if (products.some(p => p.id !== productId && p.name.toLowerCase() === newName.trim().toLowerCase())) {
         alert("A product with this new name already exists.");
         return;
@@ -336,9 +336,9 @@ function editProduct(productId) {
 
     saveProducts();
     renderProductList();
-    loadProductsForSale(false); // Refresh product buttons in admin sales
+    loadProductsForSale(false);
     renderInventory();
-    loadCategoriesForCashier(); // Update cashier categories
+    loadCategoriesForCashier();
     alert('Product updated successfully!');
 }
 
@@ -349,15 +349,15 @@ function deleteProduct(productId) {
     products = products.filter(p => p.id !== productId);
     saveProducts();
     renderProductList();
-    loadProductsForSale(false); // Refresh product buttons in admin sales
+    loadProductsForSale(false); 
     renderInventory();
-    loadCategoriesForCashier(); // Update cashier categories
+    loadCategoriesForCashier();
     alert('Product deleted successfully!');
 }
-let currentCategory = "All"; // Initialize for cashier
-const TAX_RATE = 0.05; // 5% tax example
+let currentCategory = "All";
+const TAX_RATE = 0.05;
 
-// --- Cashier DOM Elements ---
+
 const productListCashier = document.getElementById('product-list-cashier');
 const cartListCashier = document.getElementById('cart-list-cashier');
 const subtotalCashierSpan = document.getElementById('subtotal-cashier');
@@ -372,21 +372,20 @@ const clearCartBtnCashier = document.querySelector('.clear-cart-btn');
 const holdOrderBtnCashier = document.querySelector('.hold-order-btn');
 
 
-// --- Admin Sales DOM Elements (existing) ---
 const productListAdmin = document.getElementById('productList');
 const cartListAdmin = document.getElementById("cartList");
 const totalElementAdmin = document.getElementById("total");
-const customerNameInputAdmin = document.querySelector("#sales-section #customer-name"); // Specific to sales section
-const customerPhoneInputAdmin = document.querySelector("#sales-section #customer-phone"); // Specific to sales section
+const customerNameInputAdmin = document.querySelector("#sales-section #customer-name"); 
+const customerPhoneInputAdmin = document.querySelector("#sales-section #customer-phone");
 
 
-// Function to load products for sale, handles both admin and cashier views
+
 function loadProductsForSale(isAdminView = false, categoryFilter = currentCategory, searchTerm = "") {
     let targetElement = isAdminView ? productListAdmin : productListCashier;
 
-    if (!targetElement) return; // No relevant product list element found on current page
+    if (!targetElement) return;
 
-    targetElement.innerHTML = ""; // Clear previous products
+    targetElement.innerHTML = ""; 
 
     const filteredProducts = products.filter(product => {
         const matchesCategory = (categoryFilter === "All" || product.category === categoryFilter);
@@ -400,17 +399,17 @@ function loadProductsForSale(isAdminView = false, categoryFilter = currentCatego
     }
 
     if (isAdminView) {
-        // Admin view: simple buttons
+        
         filteredProducts.forEach(product => {
             const button = document.createElement("button");
             button.innerHTML = `<strong>${product.name}</strong><br>$${formatCurrency(product.price)}<span>Stock: ${product.stock}</span>`;
-            button.onclick = () => addToCart(product.id, 1, true); // Pass isAdminView=true for admin cart
+            button.onclick = () => addToCart(product.id, 1, true); 
             button.disabled = product.stock <= 0;
             button.classList.add("product-button");
             targetElement.appendChild(button);
         });
     } else {
-        // Cashier view: detailed product cards
+       
         filteredProducts.forEach(product => {
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
@@ -418,7 +417,7 @@ function loadProductsForSale(isAdminView = false, categoryFilter = currentCatego
             const existingCartItem = cart.find(item => item.id === product.id);
 
             if (existingCartItem) {
-                productCard.classList.add('with-quantity'); // Apply class for quantity controls
+                productCard.classList.add('with-quantity');
                 productCard.innerHTML = `
                     <img src="${product.image || 'placeholder.jpg'}" alt="${product.name}">
                     <div class="product-info">
@@ -450,7 +449,7 @@ function loadProductsForSale(isAdminView = false, categoryFilter = currentCatego
     }
 }
 
-// Function to add/update item in cart (now handles quantity +/-)
+
 function addToCart(productId, quantityChange = 1) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -458,46 +457,46 @@ function addToCart(productId, quantityChange = 1) {
     const existingCartItemIndex = cart.findIndex(item => item.id === productId);
 
     if (existingCartItemIndex > -1) {
-        // Item exists, update quantity
+        
         const newQuantity = cart[existingCartItemIndex].quantity + quantityChange;
         if (newQuantity > 0) {
-            // Check if there's enough stock
+            
             if (quantityChange > 0 && product.stock === 0) {
                 alert("Product is out of stock!");
                 return;
             }
             cart[existingCartItemIndex].quantity = newQuantity;
-            product.stock -= quantityChange; // Adjust actual product stock
+            product.stock -= quantityChange;
         } else {
-            // If new quantity is 0 or less, remove from cart
-            product.stock += cart[existingCartItemIndex].quantity; // Return stock
+            
+            product.stock += cart[existingCartItemIndex].quantity;
             cart.splice(existingCartItemIndex, 1);
         }
     } else if (quantityChange > 0) {
-        // New item, add to cart
+       
         if (product.stock === 0) {
             alert("Product is out of stock!");
             return;
         }
-        cart.push({ ...product, quantity: 1 }); // Add with quantity 1
-        product.stock--; // Decrease stock
+        cart.push({ ...product, quantity: 1 });
+        product.stock--; 
     }
 
-    saveProducts(); // Save updated products (with decreased stock)
-    saveCart(); // Save updated cart
+    saveProducts();
+    saveCart();
 
     const currentPath = window.location.pathname;
     if (currentPath.includes('index.html') || currentPath === '/') {
-        updateCartDisplay(true); // Update admin cart
-        loadProductsForSale(true); // Refresh admin product list
+        updateCartDisplay(true); 
+        loadProductsForSale(true);
     } else if (currentPath.includes('cashier.html')) {
-        updateCartDisplay(false); // Update cashier cart
-        loadProductsForSale(false, currentCategory, productSearchInputCashier.value); // Refresh cashier product list
+        updateCartDisplay(false); 
+        loadProductsForSale(false, currentCategory, productSearchInputCashier.value);
     }
 }
 
-// Function to remove item from cart
-function removeFromCart(productId) { // Now accepts productId
+
+function removeFromCart(productId) {
     const itemToRemoveIndex = cart.findIndex(item => item.id === productId);
     if (itemToRemoveIndex === -1) return;
 
@@ -505,33 +504,33 @@ function removeFromCart(productId) { // Now accepts productId
     const product = products.find(p => p.id === itemToRemove.id);
 
     if (product) {
-        product.stock += itemToRemove.quantity; // Add stock back for all removed quantity
-        saveProducts(); // Save updated products (with increased stock)
+        product.stock += itemToRemove.quantity; 
+        saveProducts();
     }
 
-    cart.splice(itemToRemoveIndex, 1); // Remove item from cart array
-    saveCart(); // Save updated cart
+    cart.splice(itemToRemoveIndex, 1);
+    saveCart();
 
     const currentPath = window.location.pathname;
     if (currentPath.includes('index.html') || currentPath === '/') {
-        updateCartDisplay(true); // Update admin cart
-        loadProductsForSale(true); // Refresh admin product list
+        updateCartDisplay(true); 
+        loadProductsForSale(true); 
     } else if (currentPath.includes('cashier.html')) {
-        updateCartDisplay(false); // Update cashier cart
-        loadProductsForSale(false, currentCategory, productSearchInputCashier.value); // Refresh cashier product list
+        updateCartDisplay(false); 
+        loadProductsForSale(false, currentCategory, productSearchInputCashier.value); 
     }
 }
 
 
 function updateCartDisplay(isAdminView = false) {
     let currentCartList = isAdminView ? cartListAdmin : cartListCashier;
-    let currentSubtotalElement = isAdminView ? null : subtotalCashierSpan; // Only cashier has subtotal/tax elements
+    let currentSubtotalElement = isAdminView ? null : subtotalCashierSpan; 
     let currentTaxElement = isAdminView ? null : taxCashierSpan;
     let currentTotalElement = isAdminView ? totalElementAdmin : totalCashierSpan;
 
-    if (!currentCartList || !currentTotalElement) return; // Neither elements found, perhaps not on a sales page
+    if (!currentCartList || !currentTotalElement) return; 
 
-    currentCartList.innerHTML = ""; // Clear existing cart items
+    currentCartList.innerHTML = ""; 
     let subtotal = 0;
 
     if (cart.length === 0) {
@@ -539,7 +538,7 @@ function updateCartDisplay(isAdminView = false) {
     } else {
         cart.forEach((item) => {
             if (isAdminView) {
-                // Admin view: simple list item
+               
                 const li = document.createElement("li");
                 li.innerHTML = `
                     ${item.name} - $${formatCurrency(item.price)} x ${item.quantity}
@@ -547,7 +546,7 @@ function updateCartDisplay(isAdminView = false) {
                 `;
                 currentCartList.appendChild(li);
             } else {
-                // Cashier view: detailed cart item (as per design)
+                
                 const li = document.createElement('li');
                 li.classList.add('cart-item');
                 li.innerHTML = `
@@ -572,19 +571,19 @@ function updateCartDisplay(isAdminView = false) {
     const tax = subtotal * TAX_RATE;
     const total = subtotal + tax;
 
-    if (currentSubtotalElement) { // Only update if these elements exist (cashier page)
+    if (currentSubtotalElement) { 
         currentSubtotalElement.textContent = subtotal.toFixed(2);
         currentTaxElement.textContent = tax.toFixed(2);
     }
     currentTotalElement.textContent = total.toFixed(2);
 }
 
-// Checkout function for Admin page
+
 function checkout() {
     performCheckout(customerNameInputAdmin, customerPhoneInputAdmin, totalElementAdmin);
 }
 
-// Checkout function for Cashier page
+
 function checkoutCashier() {
     performCheckout(customerNameInputCashier, customerPhoneInputCashier, totalCashierSpan);
 }
@@ -606,9 +605,9 @@ function performCheckout(customerNameInput, customerPhoneInput, totalElement) {
     const totalAmount = parseFloat(totalElement.textContent);
 
     const newOrder = {
-        id: Date.now(), // Simple unique ID
+        id: Date.now(), 
         customer: { name: customerName, phone: customerPhone },
-        items: JSON.parse(JSON.stringify(cart)), // Deep copy cart items
+        items: JSON.parse(JSON.stringify(cart)), 
         total: totalAmount,
         date: new Date().toLocaleString()
     };
@@ -618,7 +617,7 @@ function performCheckout(customerNameInput, customerPhoneInput, totalElement) {
 
     alert(`Sale completed successfully for ${customerName}! Total: $${formatCurrency(totalAmount)}`);
 
-    // Reset cart and customer info
+   
     cart = [];
     saveCart();
 
@@ -641,19 +640,19 @@ function performCheckout(customerNameInput, customerPhoneInput, totalElement) {
     }
 }
 
-// --- Cashier Specific Functions ---
+
 function loadCategoriesForCashier() {
     if (!categoriesNavCashier) return;
 
-    // Dynamically get unique categories from products
-    const uniqueCategories = ['All']; // Always start with 'All'
+   
+    const uniqueCategories = ['All']; 
     products.forEach(product => {
         if (product.category && !uniqueCategories.includes(product.category)) {
             uniqueCategories.push(product.category);
         }
     });
 
-    categoriesNavCashier.innerHTML = ''; // Clear existing buttons
+    categoriesNavCashier.innerHTML = '';
 
     uniqueCategories.forEach(category => {
         const categoryCount = category === 'All'
@@ -665,31 +664,31 @@ function loadCategoriesForCashier() {
         if (category === currentCategory) {
             button.classList.add('active');
         }
-        button.dataset.category = category; // Custom data attribute for category
+        button.dataset.category = category; 
         button.innerHTML = `${category}<span>${categoryCount} Items</span>`;
         categoriesNavCashier.appendChild(button);
 
         button.addEventListener('click', () => {
-            // Remove 'active' from previous category
+           
             document.querySelector('.category-btn.active')?.classList.remove('active');
-            // Add 'active' to clicked category
+            
             button.classList.add('active');
             currentCategory = category;
-            loadProductsForSale(false, currentCategory, productSearchInputCashier.value); // Reload products based on new category and current search
+            loadProductsForSale(false, currentCategory, productSearchInputCashier.value); 
         });
     });
 }
 
 function clearCashierCart() {
     if (confirm("Are you sure you want to clear the entire cart?")) {
-        // Return stock for all items in cart before clearing
+        
         cart.forEach(itemInCart => {
             const product = products.find(p => p.id === itemInCart.id);
             if (product) {
                 product.stock += itemInCart.quantity;
             }
         });
-        saveProducts(); // Save updated product stock
+        saveProducts(); 
 
         cart = [];
         localStorage.removeItem('cart');
@@ -699,20 +698,20 @@ function clearCashierCart() {
 }
 
 
-// --- Inventory Management (Used by Admin) ---
+
 function renderInventory() {
     const thresholdInput = document.getElementById("thresholdInput");
     const tbody = document.querySelector("tbody");
 
-    if (!tbody || !thresholdInput) return; // Ensure elements exist
+    if (!tbody || !thresholdInput) return; 
 
     const threshold = parseInt(thresholdInput.value);
     tbody.innerHTML = "";
 
     if (isNaN(threshold) || threshold < 0) {
         alert("Please enter a valid non-negative number for the stock threshold.");
-        thresholdInput.value = 5; // Reset to default
-        renderInventory(); // Re-render with default
+        thresholdInput.value = 5; 
+        renderInventory(); 
         return;
     }
 
@@ -726,7 +725,7 @@ function renderInventory() {
     filteredProducts.forEach(product => {
         const tr = document.createElement("tr");
         const status = product.stock === 0 ? 'Out of Stock' : 'Low Stock';
-        const statusClass = product.stock === 0 ? 'out-of-stock-status' : 'low-stock-status'; // Use classes for styling
+        const statusClass = product.stock === 0 ? 'out-of-stock-status' : 'low-stock-status'; 
 
         tr.innerHTML = `
             <td>${product.name}</td>
@@ -738,7 +737,7 @@ function renderInventory() {
     });
 }
 
-// --- Supplier Management (Used by Admin) ---
+
 function addSupplier(e) {
     e.preventDefault();
 
@@ -802,11 +801,11 @@ function deleteSupplier(index) {
 }
 
 
-// --- Category Management (Used by Admin) ---
+
 function addCategory(e) {
     e.preventDefault();
 
-    const nameInput = document.getElementById("category-name");
+    const nameInput = document.getElementById("categoryName");
     const name = nameInput.value.trim();
     if (!name) {
         alert("Category name is required.");
@@ -821,7 +820,7 @@ function addCategory(e) {
     categories.push(name.toLowerCase());
     saveCategories();
     renderCategoryList();
-    // Also refresh categories for cashier view if on that page, or if a product category is added
+    
     loadCategoriesForCashier();
     alert('Category added successfully!');
 
@@ -854,7 +853,7 @@ function deleteCategory(index) {
         return;
     }
     const categoryToDelete = categories[index];
-    // Optional: Warn if products are still in this category
+    
     const productsInCategory = products.filter(p => p.category && p.category.toLowerCase() === categoryToDelete);
     if (productsInCategory.length > 0) {
         if (!confirm(`There are ${productsInCategory.length} products associated with this category. Deleting it will set their category to 'Uncategorized'. Continue?`)) {
@@ -862,20 +861,20 @@ function deleteCategory(index) {
         }
         productsInCategory.forEach(p => p.category = 'Uncategorized');
         saveProducts();
-        loadProductsForSale(true); // Refresh admin sales if active
-        loadProductsForSale(false, currentCategory, productSearchInputCashier?.value || ''); // Refresh cashier products
+        loadProductsForSale(true);
+        loadProductsForSale(false, currentCategory, productSearchInputCashier?.value || '');
     }
 
     categories.splice(index, 1);
     saveCategories();
     renderCategoryList();
-    loadCategoriesForCashier(); // Update cashier categories
+    loadCategoriesForCashier();
     alert('Category deleted successfully!');
 }
 
 
-// --- Order History Management (Used by Admin) ---
-function renderOrderHistory() { // Renamed from renderOrders
+
+function renderOrderHistory() {
     const list = document.getElementById("list");
     if (!list) return;
 
@@ -916,19 +915,19 @@ function deleteOrder(orderId) {
     }
     orders = orders.filter(order => order.id !== orderId);
     saveOrders();
-    renderOrderHistory(); // Re-render the list after deletion
-    renderReports(); // Update reports if order deleted
+    renderOrderHistory();
+    renderReports(); 
     alert('Order deleted successfully!');
 }
 
 
-// --- Reports Management (Used by Admin) ---
+
 function renderReports() {
     const reportTotalOrders = document.getElementById("reportTotalOrders");
     const reportTotalRevenue = document.getElementById("reportTotalRevenue");
     const reportTotalItems = document.getElementById("reportTotalItems");
 
-    if (!reportTotalOrders || !reportTotalRevenue || !reportTotalItems) return; // Ensure elements exist
+    if (!reportTotalOrders || !reportTotalRevenue || !reportTotalItems) return; 
 
     let totalOrders = orders.length;
     let totalRevenue = 0;
@@ -952,11 +951,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const registerForm = document.getElementById("registerForm");
     if (registerForm) registerForm.addEventListener("submit", registerUser);
-    if (currentPath.includes('index.html') || currentPath === '/') { // Admin Page
-        // Check if logged in, if not, redirect to login
+    if (currentPath.includes('index.html') || currentPath === '/') { 
+        
         if (localStorage.getItem("loggedIn") !== "true" || localStorage.getItem("currentUserRole") !== "admin") {
             window.location.href = "login.html";
-            return; // Stop execution if not logged in as admin
+            return; 
         }
         showPage('dashboard');
         const productForm = document.getElementById("productForm");
@@ -971,10 +970,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const stockThresholdInput = document.getElementById("stockThreshold");
         if (stockThresholdInput) {
             stockThresholdInput.addEventListener('keyup', renderInventory);
-            stockThresholdInput.addEventListener('change', renderInventory); // Also for direct changes
+            stockThresholdInput.addEventListener('change', renderInventory);
         }
 
-        // Initial render of admin data if applicable
+       
         renderProductList();
         renderInventory();
         renderSupplierList();
@@ -983,18 +982,18 @@ document.addEventListener("DOMContentLoaded", () => {
         renderReports();
 
 
-    } else if (currentPath.includes('cashier.html')) { // Cashier Page
-        // Check if logged in, if not, redirect to login
+    } else if (currentPath.includes('cashier.html')) {
+        
         if (localStorage.getItem("loggedIn") !== "true" || localStorage.getItem("currentUserRole") !== "cashier") {
             window.location.href = "login.html";
-            return; // Stop execution if not logged in as cashier
+            return; 
         }
-        // Initialize cashier sales view
-        loadCategoriesForCashier(); // Load categories for display and filtering
-        loadProductsForSale(false, currentCategory, productSearchInputCashier.value); // Load initial products for cashier
-        updateCartDisplay(false); // Display any items from previous session
+       
+        loadCategoriesForCashier();
+        loadProductsForSale(false, currentCategory, productSearchInputCashier.value);
+        updateCartDisplay(false);
 
-        // Attach Cashier-specific event listeners
+      
         if (productListCashier) {
             productListCashier.addEventListener('click', (event) => {
                 const target = event.target;
@@ -1026,21 +1025,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         }
-
-        // Checkout button
-        const cashierCheckoutBtn = document.getElementById('cashier-checkout-btn');
+        const cashierCheckoutBtn = document.getElementById('cashierCheckoutBtn');
         if (cashierCheckoutBtn) {
             cashierCheckoutBtn.addEventListener('click', checkoutCashier);
         }
 
-        // Search input functionality
         if (productSearchInputCashier) {
             productSearchInputCashier.addEventListener('keyup', () => {
                 loadProductsForSale(false, currentCategory, productSearchInputCashier.value);
             });
         }
 
-        // Payment method buttons
         paymentMethodBtns.forEach(button => {
             button.addEventListener('click', () => {
                 paymentMethodBtns.forEach(btn => btn.classList.remove('active'));
